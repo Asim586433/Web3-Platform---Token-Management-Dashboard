@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web3 Platform | Token Management Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --primary-dark: #3f43b3;
+            --secondary: #8f94fb;
+            --accent: #ff6b6b;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .wallet-address {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff5252;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn-outline:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .page-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        /* Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .transaction-list, .asset-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .transaction-item, .asset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background-color: #f8f9fa;
+            transition: var(--transition);
+        }
+
+        .transaction-item:hover, .asset-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .transaction-details, .asset-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .transaction-icon, .asset-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .transaction-icon.send {
+            background-color: var(--danger);
+        }
+
+        .transaction-icon.receive {
+            background-color: var(--success);
+        }
+
+        .transaction-info h3, .asset-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .transaction-info p, .asset-info p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .transaction-amount, .asset-id {
+            font-weight: 600;
+        }
+
+        .transaction-amount.positive {
+            color: var(--success);
+        }
+
+        .transaction-amount.negative {
+            color: var(--danger);
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .asset-item {
+            flex-direction: column;
+            text-align: center;
+            padding: 1.5rem 1rem;
+        }
+
+        .asset-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            margin-bottom: 1rem;
+        }
+
+        .asset-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        /* Send Tokens Form */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .token-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .token-option {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .token-option.active {
+            border-color: var(--primary);
+            background-color: rgba(78, 84, 200, 0.1);
+        }
+
+        .transaction-status {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background-color: #f8f9fa;
+            display: none;
+        }
+
+        .transaction-status.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .status-pending {
+            border-left: 4px solid var(--warning);
+        }
+
+        .status-confirmed {
+            border-left: 4px solid var(--success);
+        }
+
+        .status-failed {
+            border-left: 4px solid var(--danger);
+        }
+
+        .gas-fee {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        /* About Page */
+        .about-content {
+            max-width: 800px;
+        }
+
+        .about-content h2 {
+            margin: 1.5rem 0 1rem;
+            color: var(--primary);
+        }
+
+        .about-content p {
+            margin-bottom: 1rem;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .feature-item i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #495057;
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+
+        /* Login Page */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .login-card h1 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .login-card p {
+            margin-bottom: 2rem;
+            color: var(--gray);
+        }
+
+        .wallet-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .wallet-option:hover {
+            border-color: var(--primary);
+            background-color: rgba(78, 84, 200, 0.05);
+        }
+
+        .wallet-option i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .wallet-option span {
+            font-weight: 600;
+        }
+
+        .error-message {
+            color: var(--danger);
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: rgba(220, 53, 69, 0.1);
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .wallet-info {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .asset-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-coins"></i>
+                    <span>Web3 Platform</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+                        <li><a href="#" class="nav-link" data-page="send">Send Tokens</a></li>
+                        <li><a href="#" class="nav-link" data-page="about">About</a></li>
+                    </ul>
+                </nav>
+                <div class="wallet-info">
+                    <div class="wallet-address" id="walletAddress">Not Connected</div>
+                    <button class="btn btn-outline" id="connectWalletBtn">Connect Wallet</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Login Page (shown when wallet not connected) -->
+        <section id="login-page" class="page active">
+            <div class="login-container">
+                <div class="login-card">
+                    <h1>Connect Your Wallet</h1>
+                    <p>To access the Web3 Platform, please connect your wallet</p>
+                    
+                    <div class="wallet-options">
+                        <div class="wallet-option" id="metamaskOption">
+                            <i class="fab fa-ethereum"></i>
+                            <span>MetaMask</span>
+                        </div>
+                        <div class="wallet-option" id="walletConnectOption">
+                            <i class="fas fa-wallet"></i>
+                            <span>WalletConnect</span>
+                        </div>
+                    </div>
+                    
+                    <div class="error-message" id="loginError"></div>
+                    
+                    <p class="small-text">By connecting, I accept the Terms of Service</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Page -->
+        <section id="dashboard-page" class="page">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Overview of your wallet and recent activity</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-wallet"></i>
+                    <h3>Total Balance</h3>
+                    <div class="value">2.45 ETH</div>
+                    <p>≈ $4,200.00</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Transactions</h3>
+                    <div class="value">24</div>
+                    <p>Last 30 days</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-palette"></i>
+                    <h3>NFTs</h3>
+                    <div class="value">8</div>
+                    <p>Collectibles owned</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Portfolio Value</h3>
+                    <div class="value">$6,750</div>
+                    <p>+12.5% this month</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Recent Transactions</h2>
+                    <button class="btn">View All</button>
+                </div>
+                <div class="transaction-list" id="transactionList">
+                    <!-- Transactions will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Your Assets</h2>
+                    <button class="btn">Manage</button>
+                </div>
+                <div class="asset-grid" id="assetGrid">
+                    <!-- Assets will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Send Tokens Page -->
+        <section id="send-page" class="page">
+            <div class="page-header">
+                <h1>Send Tokens</h1>
+                <p>Transfer ERC-20 or ERC-721 tokens to another wallet</p>
+            </div>
+
+            <div class="card">
+                <form id="sendForm">
+                    <div class="form-group">
+                        <label for="recipientAddress">Recipient Address</label>
+                        <input type="text" id="recipientAddress" class="form-control" placeholder="0x..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Token Type</label>
+                        <div class="token-selector">
+                            <div class="token-option active" data-type="ERC20">ERC-20</div>
+                            <div class="token-option" data-type="ERC721">ERC-721 (NFT)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tokenSelect">Token</label>
+                            <select id="tokenSelect" class="form-control" required>
+                                <option value="ETH">Ethereum (ETH)</option>
+                                <option value="DAI">DAI Stablecoin</option>
+                                <option value="USDC">USD Coin</option>
+                                <option value="WBTC">Wrapped Bitcoin</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="amountGroup">
+                            <label for="amount">Amount</label>
+                            <input type="number" id="amount" class="form-control" placeholder="0.0" step="0.001" required>
+                        </div>
+
+                        <div class="form-group" id="tokenIdGroup" style="display: none;">
+                            <label for="tokenId">Token ID</label>
+                            <input type="number" id="tokenId" class="form-control" placeholder="123">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-paper-plane"></i> Send Transaction
+                    </button>
+                </form>
+
+                <div class="transaction-status" id="transactionStatus">
+                    <div class="status-header">
+                        <h3>Transaction Status</h3>
+                        <div class="spinner" id="statusSpinner"></div>
+                    </div>
+                    <p id="statusMessage">Processing your transaction...</p>
+                    <div class="gas-fee">
+                        <span>Estimated Gas Fee:</span>
+                        <span id="gasFee">0.0021 ETH</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Page -->
+        <section id="about-page" class="page">
+            <div class="page-header">
+                <h1>About Web3 Platform</h1>
+                <p>Learn more about our platform and how to use it</p>
+            </div>
+
+            <div class="about-content">
+                <div class="card">
+                    <h2>What is Web3 Platform?</h2>
+                    <p>Web3 Platform is a user-friendly interface for interacting with the Ethereum blockchain. Our platform allows you to manage your digital assets, send and receive tokens, and view your transaction history—all in one secure location.</p>
+                    
+                    <h2>Key Features</h2>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Secure Wallet Connection</h3>
+                            <p>Connect your wallet securely using MetaMask or WalletConnect</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-exchange-alt"></i>
+                            <h3>Token Transactions</h3>
+                            <p>Send and receive ERC-20 and ERC-721 tokens with ease</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Portfolio Overview</h3>
+                            <p>Track your assets and transaction history in one dashboard</p>
+                        </div>
+                    </div>
+                    
+                    <h2>Getting Started</h2>
+                    <p>To begin using Web3 Platform:</p>
+                    <ol>
+                        <li>Connect your wallet using the button in the top right corner</li>
+                        <li>View your dashboard to see your balance and recent transactions</li>
+                        <li>Use the "Send Tokens" page to transfer assets to other wallets</li>
+                        <li>Explore your NFT collection in the assets section</li>
+                    </ol>
+                    
+                    <h2>Security Notice</h2>
+                    <p>Your security is our top priority. We never store your private keys or seed phrases. All transactions are signed directly through your connected wallet. Always verify transaction details before confirming.</p>
+                    
+                    <h2>Need Help?</h2>
+                    <p>If you encounter any issues or have questions about using the platform, please check our documentation or contact our support team at support@web3platform.example.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Web3 Platform</h3>
+                    <p>A secure and user-friendly interface for managing your digital assets on the Ethereum blockchain.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#" class="nav-link" data-page="dashboard">Dashboard</a></li>
+                        <li><a href="#" class="nav-link" data-page="send">Send Tokens</a></li>
+                        <li><a href="#" class="nav-link" data-page="about">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Web3 Platform. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dummy data for the application
+        const dummyData = {
+            transactions: [
+                { id: 1, type: 'send', token: 'ETH', amount: 0.5, to: '0x742...d35', date: '2023-06-15 14:30', status: 'confirmed' },
+                { id: 2, type: 'receive', token: 'DAI', amount: 150, from: '0x8a3...f21', date: '2023-06-14 09:15', status: 'confirmed' },
+                { id: 3, type: 'send', token: 'USDC', amount: 75, to: '0x3b9...a84', date: '2023-06-12 16:45', status: 'confirmed' },
+                { id: 4, type: 'receive', token: 'ETH', amount: 1.2, from: '0x9c2...e7b', date: '2023-06-10 11:20', status: 'confirmed' }
+            ],
+            assets: [
+                { id: 1, name: 'Ethereum', symbol: 'ETH', balance: 2.45, value: 4200 },
+                { id: 2, name: 'DAI Stablecoin', symbol: 'DAI', balance: 350, value: 350 },
+                { id: 3, name: 'USD Coin', symbol: 'USDC', balance: 500, value: 500 },
+                { id: 4, name: 'Wrapped Bitcoin', symbol: 'WBTC', balance: 0.05, value: 1500 }
+            ],
+            nfts: [
+                { id: 1, name: 'CryptoPunk #1234', image: 'punk', contract: '0xb47...6a0' },
+                { id: 2, name: 'Bored Ape #5678', image: 'ape', contract: '0xbc4...b61' },
+                { id: 3, name: 'Art Blocks #9012', image: 'art', contract: '0xa7d...8d9' },
+                { id: 4, name: 'Moonbirds #3456', image: 'bird', contract: '0x235...7f3' }
+            ]
+        };
+
+        // DOM Elements
+        const loginPage = document.getElementById('login-page');
+        const dashboardPage = document.getElementById('dashboard-page');
+        const sendPage = document.getElementById('send-page');
+        const aboutPage = document.getElementById('about-page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const walletAddress = document.getElementById('walletAddress');
+        const metamaskOption = document.getElementById('metamaskOption');
+        const walletConnectOption = document.getElementById('walletConnectOption');
+        const loginError = document.getElementById('loginError');
+        const transactionList = document.getElementById('transactionList');
+        const assetGrid = document.getElementById('assetGrid');
+        const sendForm = document.getElementById('sendForm');
+        const tokenOptions = document.querySelectorAll('.token-option');
+        const amountGroup = document.getElementById('amountGroup');
+        const tokenIdGroup = document.getElementById('tokenIdGroup');
+        const transactionStatus = document.getElementById('transactionStatus');
+        const statusSpinner = document.getElementById('statusSpinner');
+        const statusMessage = document.getElementById('statusMessage');
+        const gasFee = document.getElementById('gasFee');
+
+        // Application State
+        let currentAccount = null;
+        let isConnected = false;
+
+        // Initialize the application
+        function initApp() {
+            // Set up navigation
+            setupNavigation();
+            
+            // Set up wallet connection
+            setupWalletConnection();
+            
+            // Set up token type selector
+            setupTokenSelector();
+            
+            // Set up transaction form
+            setupTransactionForm();
+            
+            // Load dummy data
+            loadDummyData();
+            
+            // Check if we're simulating a connected wallet
+            checkInitialConnection();
+        }
+
+        // Set up page navigation
+        function setupNavigation() {
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.getAttribute('data-page');
+                    showPage(page);
+                    
+                    // Update active nav link
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
+        }
+
+        // Show the specified page
+        function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show the requested page
+            document.getElementById(`${pageName}-page`).classList.add('active');
+        }
+
+        // Set up wallet connection functionality
+        function setupWalletConnection() {
+            // Connect wallet button
+            connectWalletBtn.addEventListener('click', connectWallet);
+            
+            // MetaMask option
+            metamaskOption.addEventListener('click', connectWithMetaMask);
+            
+            // WalletConnect option
+            walletConnectOption.addEventListener('click', connectWithWalletConnect);
+        }
+
+        // Connect wallet function
+        function connectWallet() {
+            if (isConnected) {
+                disconnectWallet();
+            } else {
+                // Show login page
+                showPage('login');
+            }
+        }
+
+        // Connect with MetaMask
+        function connectWithMetaMask() {
+            // In a real application, this would connect to MetaMask
+            // For this demo, we'll simulate a successful connection
+            
+            // Check if MetaMask is installed
+            if (typeof window.ethereum === 'undefined') {
+                showError('MetaMask is not installed. Please install it to continue.');
+                return;
+            }
+            
+            // Simulate connection process
+            simulateConnection('MetaMask');
+        }
+
+        // Connect with WalletConnect
+        function connectWithWalletConnect() {
+            // In a real application, this would initialize WalletConnect
+            // For this demo, we'll simulate a successful connection
+            simulateConnection('WalletConnect');
+        }
+
+        // Simulate wallet connection
+        function simulateConnection(walletType) {
+            // Show loading state
+            loginError.style.display = 'none';
+            connectWalletBtn.innerHTML = '<div class="spinner"></div> Connecting...';
+            connectWalletBtn.disabled = true;
+            
+            // Simulate API call/connection delay
+            setTimeout(() => {
+                // Generate a fake wallet address
+                const fakeAddress = `0x${Array(40).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+                
+                // Update UI
+                currentAccount = fakeAddress;
+                isConnected = true;
+                walletAddress.textContent = `${fakeAddress.substring(0, 6)}...${fakeAddress.substring(38)}`;
+                connectWalletBtn.textContent = 'Disconnect';
+                connectWalletBtn.disabled = false;
+                
+                // Hide login page and show dashboard
+                loginPage.classList.remove('active');
+                dashboardPage.classList.add('active');
+                
+                // Update navigation to show dashboard as active
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                document.querySelector('[data-page="dashboard"]').classList.add('active');
+                
+                console.log(`Connected with ${walletType}: ${fakeAddress}`);
+            }, 1500);
+        }
+
+        // Disconnect wallet
+        function disconnectWallet() {
+            currentAccount = null;
+            isConnected = false;
+            walletAddress.textContent = 'Not Connected';
+            connectWalletBtn.textContent = 'Connect Wallet';
+            
+            // Show login page
+            showPage('login');
+            
+            console.log('Wallet disconnected');
+        }
+
+        // Show error message
+        function showError(message) {
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+        }
+
+        // Set up token type selector
+        function setupTokenSelector() {
+            tokenOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove active class from all options
+                    tokenOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    option.classList.add('active');
+                    
+                    // Show/hide appropriate form fields
+                    const tokenType = option.getAttribute('data-type');
+                    if (tokenType === 'ERC20') {
+                        amountGroup.style.display = 'block';
+                        tokenIdGroup.style.display = 'none';
+                        document.getElementById('tokenSelect').innerHTML = `
+                            <option value="ETH">Ethereum (ETH)</option>
+                            <option value="DAI">DAI Stablecoin</option>
+                            <option value="USDC">USD Coin</option>
+                            <option value="WBTC">Wrapped Bitcoin</option>
+                        `;
+                    } else {
+                        amountGroup.style.display = 'none';
+                        tokenIdGroup.style.display = 'block';
+                        document.getElementById('tokenSelect').innerHTML = `
+                            <option value="PUNK">CryptoPunks</option>
+                            <option value="APE">Bored Ape Yacht Club</option>
+                            <option value="ART">Art Blocks</option>
+                            <option value="MOON">Moonbirds</option>
+                        `;
+                    }
+                });
+            });
+        }
+
+        // Set up transaction form
+        function setupTransactionForm() {
+            sendForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                if (!isConnected) {
+                    alert('Please connect your wallet first');
+                    return;
+                }
+                
+                // Get form data
+                const recipient = document.getElementById('recipientAddress').value;
+                const tokenType = document.querySelector('.token-option.active').getAttribute('data-type');
+                const token = document.getElementById('tokenSelect').value;
+                const amount = document.getElementById('amount').value;
+                const tokenId = document.getElementById('tokenId').value;
+                
+                // Validate form
+                if (!recipient || !token) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                if (tokenType === 'ERC20' && !amount) {
+                    alert('Please enter an amount');
+                    return;
+                }
+                
+                if (tokenType === 'ERC721' && !tokenId) {
+                    alert('Please enter a token ID');
+                    return;
+                }
+                
+                // Simulate transaction
+                simulateTransaction(recipient, tokenType, token, amount, tokenId);
+            });
+        }
+
+        // Simulate transaction
+        function simulateTransaction(recipient, tokenType, token, amount, tokenId) {
+            // Show transaction status
+            transactionStatus.classList.add('active', 'status-pending');
+            statusSpinner.style.display = 'block';
+            statusMessage.textContent = 'Processing your transaction...';
+            gasFee.textContent = '0.0021 ETH';
+            
+            // Disable form
+            sendForm.querySelector('button').disabled = true;
+            
+            // Simulate transaction processing
+            setTimeout(() => {
+                // Simulate successful transaction 90% of the time
+                const isSuccess = Math.random() > 0.1;
+                
+                if (isSuccess) {
+                    transactionStatus.classList.remove('status-pending');
+                    transactionStatus.classList.add('status-confirmed');
+                    statusSpinner.style.display = 'none';
+                    statusMessage.textContent = 'Transaction confirmed!';
+                    
+                    // Add to transaction history
+                    const newTransaction = {
+                        id: dummyData.transactions.length + 1,
+                        type: 'send',
+                        token: token,
+                        amount: tokenType === 'ERC20' ? parseFloat(amount) : 1,
+                        to: recipient,
+                        date: new Date().toLocaleString(),
+                        status: 'confirmed'
+                    };
+                    
+                    dummyData.transactions.unshift(newTransaction);
+                    loadDummyData();
+                    
+                    // Reset form after delay
+                    setTimeout(() => {
+                        sendForm.reset();
+                        transactionStatus.classList.remove('active');
+                        sendForm.querySelector('button').disabled = false;
+                    }, 3000);
+                } else {
+                    transactionStatus.classList.remove('status-pending');
+                    transactionStatus.classList.add('status-failed');
+                    statusSpinner.style.display = 'none';
+                    statusMessage.textContent = 'Transaction failed. Please try again.';
+                    
+                    // Re-enable form after delay
+                    setTimeout(() => {
+                        transactionStatus.classList.remove('active');
+                        sendForm.querySelector('button').disabled = false;
+                    }, 3000);
+                }
+            }, 3000);
+        }
+
+        // Load dummy data into the UI
+        function loadDummyData() {
+            // Load transactions
+            transactionList.innerHTML = '';
+            dummyData.transactions.forEach(tx => {
+                const txElement = document.createElement('div');
+                txElement.className = 'transaction-item';
+                txElement.innerHTML = `
+                    <div class="transaction-details">
+                        <div class="transaction-icon ${tx.type}">
+                            <i class="fas fa-${tx.type === 'send' ? 'arrow-up' : 'arrow-down'}"></i>
+                        </div>
+                        <div class="transaction-info">
+                            <h3>${tx.type === 'send' ? 'Sent' : 'Received'} ${tx.token}</h3>
+                            <p>${tx.date} • ${tx.type === 'send' ? `To: ${tx.to}` : `From: ${tx.from`}</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount ${tx.type === 'send' ? 'negative' : 'positive'}">
+                        ${tx.type === 'send' ? '-' : '+'} ${tx.amount} ${tx.token}
+                    </div>
+                `;
+                transactionList.appendChild(txElement);
+            });
+            
+            // Load assets
+            assetGrid.innerHTML = '';
+            dummyData.assets.forEach(asset => {
+                const assetElement = document.createElement('div');
+                assetElement.className = 'asset-item';
+                assetElement.innerHTML = `
+                    <div class="asset-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="asset-info">
+                        <h3>${asset.name}</h3>
+                        <p>${asset.balance} ${asset.symbol}</p>
+                        <p>$${asset.value}</p>
+                    </div>
+                `;
+                assetGrid.appendChild(assetElement);
+            });
+            
+            // Add NFTs if we have any
+            dummyData.nfts.forEach(nft => {
+                const nftElement = document.createElement('div');
+                nftElement.className = 'asset-item';
+                nftElement.innerHTML = `
+                    <div class="asset-image">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <div class="asset-info">
+                        <h3>${nft.name}</h3>
+                        <p>Token #${nft.id}</p>
+                    </div>
+                `;
+                assetGrid.appendChild(nftElement);
+            });
+        }
+
+        // Check if we should simulate an initial connection
+        function checkInitialConnection() {
+            // For demo purposes, we'll start with the wallet disconnected
+            // In a real app, you might check if there's a cached connection
+            showPage('login');
+        }
+
+        // Initialize the app when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
