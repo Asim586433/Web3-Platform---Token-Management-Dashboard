@@ -34,6 +34,9 @@
             background-color: #f5f7ff;
             color: var(--dark);
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
@@ -150,7 +153,7 @@
         /* Main Content */
         main {
             padding: 2rem 0;
-            min-height: calc(100vh - 200px);
+            flex: 1;
         }
 
         .page {
@@ -464,12 +467,94 @@
             margin-bottom: 1rem;
         }
 
+        /* Documentation Pages */
+        .docs-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .docs-sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .docs-sidebar h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .docs-sidebar ul {
+            list-style: none;
+        }
+
+        .docs-sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-sidebar a {
+            color: var(--dark);
+            text-decoration: none;
+            padding: 0.5rem;
+            display: block;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .docs-sidebar a:hover, .docs-sidebar a.active {
+            background-color: rgba(78, 84, 200, 0.1);
+            color: var(--primary);
+        }
+
+        .docs-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .docs-content h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .docs-content h3 {
+            margin: 1.5rem 0 1rem;
+            color: var(--primary-dark);
+        }
+
+        .docs-content p {
+            margin-bottom: 1rem;
+        }
+
+        .docs-content ul, .docs-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1.5rem;
+        }
+
+        .faq-item h3 {
+            margin-bottom: 0.5rem;
+        }
+
         /* Footer */
         footer {
             background-color: var(--dark);
             color: white;
             padding: 2rem 0;
-            margin-top: 2rem;
+            margin-top: auto;
         }
 
         .footer-content {
@@ -603,6 +688,14 @@
             .asset-grid {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
+            
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .docs-sidebar {
+                position: static;
+            }
         }
 
         /* Loading Spinner */
@@ -635,6 +728,7 @@
                         <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
                         <li><a href="#" class="nav-link" data-page="send">Send Tokens</a></li>
                         <li><a href="#" class="nav-link" data-page="about">About</a></li>
+                        <li><a href="#" class="nav-link" data-page="documentation">Documentation</a></li>
                     </ul>
                 </nav>
                 <div class="wallet-info">
@@ -838,6 +932,192 @@
                 </div>
             </div>
         </section>
+
+        <!-- Documentation Page -->
+        <section id="documentation-page" class="page">
+            <div class="page-header">
+                <h1>Documentation</h1>
+                <p>Complete guides and resources for using Web3 Platform</p>
+            </div>
+
+            <div class="docs-container">
+                <div class="docs-sidebar">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#" class="docs-nav active" data-doc="documentation">Documentation</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="faq">FAQ</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="blog">Blog</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="support">Support</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="privacy">Privacy Policy</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="terms">Terms of Service</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="cookies">Cookie Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="docs-content">
+                    <div id="documentation-content" class="doc-section active">
+                        <h2>Documentation</h2>
+                        <p>Welcome to the Web3 Platform documentation. Here you'll find everything you need to get started with our platform.</p>
+                        
+                        <h3>Getting Started</h3>
+                        <p>To begin using Web3 Platform, you'll need to connect a wallet. We support MetaMask and WalletConnect.</p>
+                        
+                        <h3>Wallet Connection</h3>
+                        <p>Follow these steps to connect your wallet:</p>
+                        <ol>
+                            <li>Click the "Connect Wallet" button in the top right corner</li>
+                            <li>Select your preferred wallet provider</li>
+                            <li>Approve the connection request in your wallet</li>
+                            <li>You're now connected and can access all platform features</li>
+                        </ol>
+                        
+                        <h3>Sending Tokens</h3>
+                        <p>To send tokens to another address:</p>
+                        <ol>
+                            <li>Navigate to the "Send Tokens" page</li>
+                            <li>Enter the recipient's wallet address</li>
+                            <li>Select the token type (ERC-20 or ERC-721)</li>
+                            <li>Choose the specific token and amount/token ID</li>
+                            <li>Review the transaction details and confirm</li>
+                        </ol>
+                    </div>
+
+                    <div id="faq-content" class="doc-section">
+                        <h2>Frequently Asked Questions</h2>
+                        
+                        <div class="faq-item">
+                            <h3>How do I connect my wallet?</h3>
+                            <p>Click the "Connect Wallet" button in the top right corner and select your preferred wallet provider. Follow the prompts to complete the connection.</p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3>Which wallets are supported?</h3>
+                            <p>We currently support MetaMask and WalletConnect. WalletConnect allows you to connect with many popular mobile wallets.</p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3>What tokens can I send?</h3>
+                            <p>You can send any ERC-20 tokens (like ETH, DAI, USDC) or ERC-721 tokens (NFTs) that are in your connected wallet.</p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3>Are there any fees?</h3>
+                            <p>We don't charge any platform fees. You'll only pay the standard Ethereum network gas fees for transactions.</p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3>Is my wallet secure?</h3>
+                            <p>Yes. We never have access to your private keys or seed phrases. All transactions are signed directly in your wallet.</p>
+                        </div>
+                    </div>
+
+                    <div id="blog-content" class="doc-section">
+                        <h2>Blog</h2>
+                        <p>Welcome to our blog. Here we share updates, tutorials, and insights about Web3 technology.</p>
+                        
+                        <h3>Latest Posts</h3>
+                        
+                        <div class="faq-item">
+                            <h3>Understanding Gas Fees</h3>
+                            <p>Learn how Ethereum gas fees work and how to optimize your transactions to save money.</p>
+                            <p><small>Posted on June 15, 2023</small></p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3>NFT Security Best Practices</h3>
+                            <p>Discover essential security measures to protect your NFT collection from scams and theft.</p>
+                            <p><small>Posted on May 28, 2023</small></p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3>Introducing Multi-Chain Support</h3>
+                            <p>We're excited to announce that support for Polygon and Binance Smart Chain is coming soon!</p>
+                            <p><small>Posted on April 10, 2023</small></p>
+                        </div>
+                    </div>
+
+                    <div id="support-content" class="doc-section">
+                        <h2>Support</h2>
+                        <p>If you need help with Web3 Platform, we're here to assist you.</p>
+                        
+                        <h3>Contact Us</h3>
+                        <p>You can reach our support team at <strong>support@web3platform.example</strong>. We typically respond within 24 hours.</p>
+                        
+                        <h3>Community Forum</h3>
+                        <p>Join our community forum to ask questions and share experiences with other users.</p>
+                        
+                        <h3>Bug Reports</h3>
+                        <p>If you encounter a bug or technical issue, please report it to our development team at <strong>bugs@web3platform.example</strong>.</p>
+                    </div>
+
+                    <div id="privacy-content" class="doc-section">
+                        <h2>Privacy Policy</h2>
+                        <p>Last updated: June 1, 2023</p>
+                        
+                        <h3>Information We Collect</h3>
+                        <p>We collect minimal information necessary to provide our services. This includes:</p>
+                        <ul>
+                            <li>Public wallet addresses when you connect your wallet</li>
+                            <li>Transaction data that you choose to share with us</li>
+                            <li>Basic usage analytics to improve our platform</li>
+                        </ul>
+                        
+                        <h3>How We Use Your Information</h3>
+                        <p>We use your information to:</p>
+                        <ul>
+                            <li>Provide and maintain our services</li>
+                            <li>Process transactions</li>
+                            <li>Improve user experience</li>
+                            <li>Communicate with you about platform updates</li>
+                        </ul>
+                        
+                        <h3>Data Security</h3>
+                        <p>We implement industry-standard security measures to protect your information. However, no method of transmission over the Internet is 100% secure.</p>
+                    </div>
+
+                    <div id="terms-content" class="doc-section">
+                        <h2>Terms of Service</h2>
+                        <p>Last updated: June 1, 2023</p>
+                        
+                        <h3>Acceptance of Terms</h3>
+                        <p>By accessing or using Web3 Platform, you agree to be bound by these Terms of Service.</p>
+                        
+                        <h3>Eligibility</h3>
+                        <p>You must be at least 18 years old to use our platform. By using our services, you represent that you meet this requirement.</p>
+                        
+                        <h3>User Responsibilities</h3>
+                        <p>You are solely responsible for:</p>
+                        <ul>
+                            <li>Securing your wallet and private keys</li>
+                            <li>Verifying all transaction details before confirming</li>
+                            <li>Complying with applicable laws and regulations</li>
+                        </ul>
+                        
+                        <h3>Limitation of Liability</h3>
+                        <p>Web3 Platform is provided "as is" without warranties of any kind. We are not liable for any losses resulting from the use of our platform.</p>
+                    </div>
+
+                    <div id="cookies-content" class="doc-section">
+                        <h2>Cookie Policy</h2>
+                        <p>Last updated: June 1, 2023</p>
+                        
+                        <h3>What Are Cookies</h3>
+                        <p>Cookies are small text files that are stored on your device when you visit our website.</p>
+                        
+                        <h3>How We Use Cookies</h3>
+                        <p>We use cookies to:</p>
+                        <ul>
+                            <li>Remember your preferences</li>
+                            <li>Analyze how our platform is used</li>
+                            <li>Improve user experience</li>
+                        </ul>
+                        
+                        <h3>Managing Cookies</h3>
+                        <p>You can control cookie settings through your browser. However, disabling cookies may affect the functionality of our platform.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -854,28 +1134,29 @@
                         <li><a href="#" class="nav-link" data-page="dashboard">Dashboard</a></li>
                         <li><a href="#" class="nav-link" data-page="send">Send Tokens</a></li>
                         <li><a href="#" class="nav-link" data-page="about">About</a></li>
+                        <li><a href="#" class="nav-link" data-page="documentation">Documentation</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h3>Resources</h3>
                     <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Support</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="documentation">Documentation</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="faq">FAQ</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="blog">Blog</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="support">Support</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h3>Legal</h3>
                     <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="privacy">Privacy Policy</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="terms">Terms of Service</a></li>
+                        <li><a href="#" class="docs-nav" data-doc="cookies">Cookie Policy</a></li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 Web3 Platform. All rights reserved.</p>
+                <p>&copy; 2025 Web3 Platform. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -908,6 +1189,7 @@
         const dashboardPage = document.getElementById('dashboard-page');
         const sendPage = document.getElementById('send-page');
         const aboutPage = document.getElementById('about-page');
+        const documentationPage = document.getElementById('documentation-page');
         const navLinks = document.querySelectorAll('.nav-link');
         const connectWalletBtn = document.getElementById('connectWalletBtn');
         const walletAddress = document.getElementById('walletAddress');
@@ -924,6 +1206,8 @@
         const statusSpinner = document.getElementById('statusSpinner');
         const statusMessage = document.getElementById('statusMessage');
         const gasFee = document.getElementById('gasFee');
+        const docsNavs = document.querySelectorAll('.docs-nav');
+        const docSections = document.querySelectorAll('.doc-section');
 
         // Application State
         let currentAccount = null;
@@ -943,6 +1227,9 @@
             // Set up transaction form
             setupTransactionForm();
             
+            // Set up documentation navigation
+            setupDocsNavigation();
+            
             // Load dummy data
             loadDummyData();
             
@@ -955,6 +1242,13 @@
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
+                    
+                    if (!isConnected && link.getAttribute('data-page') !== 'about' && 
+                        link.getAttribute('data-page') !== 'documentation') {
+                        showPage('login');
+                        return;
+                    }
+                    
                     const page = link.getAttribute('data-page');
                     showPage(page);
                     
@@ -963,6 +1257,32 @@
                     link.classList.add('active');
                 });
             });
+        }
+
+        // Set up documentation navigation
+        function setupDocsNavigation() {
+            docsNavs.forEach(nav => {
+                nav.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const doc = nav.getAttribute('data-doc');
+                    showDocSection(doc);
+                    
+                    // Update active nav
+                    docsNavs.forEach(n => n.classList.remove('active'));
+                    nav.classList.add('active');
+                });
+            });
+        }
+
+        // Show the specified documentation section
+        function showDocSection(docName) {
+            // Hide all doc sections
+            docSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the requested section
+            document.getElementById(`${docName}-content`).classList.add('active');
         }
 
         // Show the specified page
@@ -1214,7 +1534,7 @@
                         </div>
                         <div class="transaction-info">
                             <h3>${tx.type === 'send' ? 'Sent' : 'Received'} ${tx.token}</h3>
-                            <p>${tx.date} • ${tx.type === 'send' ? `To: ${tx.to}` : `From: ${tx.from`}</p>
+                            <p>${tx.date} • ${tx.type === 'send' ? `To: ${tx.to}` : `From: ${tx.from}`}</p>
                         </div>
                     </div>
                     <div class="transaction-amount ${tx.type === 'send' ? 'negative' : 'positive'}">
